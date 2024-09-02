@@ -1,39 +1,37 @@
-def dijkstra(Grafo, salida):
-    # inicializacion de los diccionarios para distancias y predecesores
+def dijkstra(grafo, salida):
+    # inicializa los diccionarios para almacenar distancias minimas y predecesores
     dist, prev = {}, {}
-    result = []
+    visitados = []  # lista para rastrear el orden en que se visitan los nodos
 
-    # establece la distancia inicial a cada vertice como infinita y sin predecesores
-    for vertice in Grafo:
+    # establece todas las distancias a infinito inicialmente y sin predecesores
+    for vertice in grafo:
         dist[vertice] = float("inf")
         prev[vertice] = None
-    # la distancia desde el nodo de salida a si mismo es 0
-    dist[salida] = 0
+    dist[salida] = 0  # la distancia al nodo de salida es 0
 
-    # lista de nodos no visitados
-    Q = [vertice for vertice in Grafo]
+    # inicializa la lista de nodos no visitados
+    no_visitados = list(grafo.keys())
 
-    # mientras haya nodos no visitados en la lista Q
-    while Q:
-        # selecciona el nodo con la distancia mnima desde la salida
-        u = min(Q, key=dist.get)
-        Q.remove(u)  # remueve el nodo seleccionado de la lista Q
-        result.append(u)  # agrega el nodo al resultado de nodos visitados en orden
+    # mientras haya nodos no visitados
+    while no_visitados:
+        # selecciona el nodo no visitado con la distancia minima
+        u = min(no_visitados, key=dist.get)
+        no_visitados.remove(u)  # marca el nodo como visitado
+        visitados.append(u)  # agrega el nodo a la lista de nodos visitados
 
-        # revisa cada vecino del nodo u
-        for vecino in Grafo[u]:
-            # solo considera nodos que estan en Q y verificua si la nueva distancia es menor que la actual
-            if vecino in Q and dist[vecino] > dist[u] + Grafo[u][vecino]:
-                # actualiza la distancia para el vecino
-                dist[vecino] = dist[u] + Grafo[u][vecino]
-                # actualiza el predecesor para el vecino
-                prev[vecino] = u
+        # revisa cada vecino del nodo actual
+        for vecino, peso in grafo[u].items():
+            # solo considera vecinos no visitados y actualiza la distancia si es más corta
+            nueva_distancia = dist[u] + peso
+            if vecino in no_visitados and nueva_distancia < dist[vecino]:
+                dist[vecino] = nueva_distancia  # actualiza la distancia mínima
+                prev[vecino] = u  # actualiza el predecesor
 
-    # retorna el orden de visita de los nodos, las distancias minimas y los predecesores
-    return result, dist, prev
+    # retorna el orden de visita de los nodos, las distancias mínimas y los predecesores
+    return visitados, dist, prev
 
 
-# definicion del grafo con sus nodos y aristas 
+# definición del grafo con sus nodos y aristas ponderadas
 grafo = {
     'a': {'b': 4, 'c': 3},
     'b': {'d': 5},
@@ -45,10 +43,10 @@ grafo = {
     'z': {}
 }
 
+# ejecución del algoritmo de Dijkstra desde el nodo 'a'
+visitados, distancias, predecesores = dijkstra(grafo, 'a')
 
-s, distancia, previos = dijkstra(grafo, 'a')
-
-
-print(f"{s=}")  
-print(f"{distancia=}")  # Distancias mínimas desde 'a' a cada nodo
-print(f"{previos=}")  
+# imprime los resultados
+print(f"Orden de nodos visitados: {visitados}")
+print(f"Distancias mínimas desde 'a': {distancias}")
+print(f"Predecesores en el camino más corto: {predecesores}")
